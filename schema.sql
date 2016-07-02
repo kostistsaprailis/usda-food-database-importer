@@ -84,7 +84,7 @@ CREATE TABLE langual_desc (
   factor_code varchar(5) PRIMARY KEY,
 
   -- The description of the LanguaL Factor Code from the thesaurus.
-  desc varchar(140) not null
+  description varchar(140) not null
 );
 
 CREATE TABLE nutrients (
