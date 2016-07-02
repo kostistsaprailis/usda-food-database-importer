@@ -1,5 +1,16 @@
 BEGIN;
 
+CREATE TABLE foodgroups (
+
+  -- 4-digit code identifying a food group. Only the first 2 digits are
+  -- currently assigned. In the future, the last 2 digits may be used.
+  -- Codes may not be consecutive.
+  foodgroup_id varchar(4) PRIMARY KEY,
+
+  -- Name of food group.
+  foodgroup_desc varchar(60) not null
+);
+
 CREATE TABLE foods (
 
   -- 5-digit Nutrient Databank number that uniquely identifies a food item.
@@ -54,15 +65,14 @@ CREATE TABLE foods (
   cho_factor real
 );
 
-CREATE TABLE foodgroups (
+CREATE TABLE langual_desc (
 
-  -- 4-digit code identifying a food group. Only the first 2 digits are
-  -- currently assigned. In the future, the last 2 digits may be used.
-  -- Codes may not be consecutive.
-  foodgroup_id varchar(4) PRIMARY KEY,
+  -- The LanguaL factor from the Thesaurus. Only those codes used to factor
+  -- the foods contained in the LanguaL Factor file are included in this file.
+  factor_code varchar(5) PRIMARY KEY,
 
-  -- Name of food group.
-  foodgroup_desc varchar(60) not null
+  -- The description of the LanguaL Factor Code from the thesaurus.
+  description varchar(140) not null
 );
 
 CREATE TABLE langual_factor (
@@ -75,89 +85,6 @@ CREATE TABLE langual_factor (
   factor_code varchar(5) references langual_desc(factor_code),
 
   PRIMARY KEY(ndb_no, factor_code)
-);
-
-CREATE TABLE langual_desc (
-
-  -- The LanguaL factor from the Thesaurus. Only those codes used to factor
-  -- the foods contained in the LanguaL Factor file are included in this file.
-  factor_code varchar(5) PRIMARY KEY,
-
-  -- The description of the LanguaL Factor Code from the thesaurus.
-  description varchar(140) not null
-);
-
-CREATE TABLE nutrients (
-    -- 5-digit Nutrient Databank number that uniquely identifies a food item.
-    -- If this field is defined as numeric, the leading zero will be lost.
-    ndb_no varchar(5) REFERENCES foods(ndb_no),
-
-    -- Unique 3-digit identifier code for a nutrient.
-    nutr_no varchar(3) REFERENCES nutrients_desc(nutr_no),
-
-    -- Amount in 100 grams, edible portion
-    nutr_val real not null,
-
-    -- Number of data points is the number of analyses used to calculate the
-    -- nutrient value. If the number of data points is 0,
-    -- the value was calculated or imputed.
-    num_data_points real not null,
-
-    -- Standard error of the mean. Null if cannot be calculated. The standard
-    -- error is also not given if the number of data points is less than three.
-    std_error real,
-
-    -- Standard error of the mean. Null if cannot be calculated.
-    -- The standard error is also not given if the number of data points
-    -- is less than three.
-    src_code varchar(2) not null REFERENCES source_codes(src_code),
-
-    -- Data Derivation Code giving specific information on how the value is determined.
-    -- This field is populated only for items added or updated starting with SR14.
-    -- This field may not be populated if older records were used in the
-    -- calculation of the mean value.
-    deriv_code varchar(4) REFERENCES data_derivation_codes(deriv_code),
-
-    -- NDB number of the item used to calculate a missing value.
-    -- Populated only for items added or updated starting with SR14.
-    ref_ndb_no varchar(5) REFERENCES foods(ndb_no),
-
-    -- Indicates a vitamin or mineral added for fortification or enrichment.
-    -- This field is populated for ready-to- eat breakfast cereals and
-    -- many brand-name hot cereals in food group 08.
-    add_nutr_mark varchar(1),
-
-    -- Number of studies.
-    num_studies smallint,
-
-    -- Minimum value.
-    min real,
-
-    -- Maximum value.
-    max real,
-
-    -- Degrees of freedom.
-    df smallint,
-
-    -- Lower 95% error bound.
-    low_eb real,
-
-    -- Upper 95% error bound.
-    up_eb real,
-
-    -- Statistical comments. See definitions below.
-    stat_comt varchar(10),
-
-    -- Indicates when a value was either added to the database or last modified.
-    addmod_date varchar(10),
-
-    -- Confidence Code indicating data quality, based on evaluation of sample
-    -- plan, sample handling, analytical method, analytical quality control,
-    -- and number of samples analyzed. Not included in this release, but is
-    -- planned for future releases.
-    cc varchar(1),
-
-    PRIMARY KEY(ndb_no, nutr_no)
 );
 
 CREATE TABLE nutrients_desc (
@@ -297,5 +224,79 @@ CREATE TABLE sources_of_data_link (
 
     PRIMARY KEY(ndb_no, nutr_no, datasrc_id)
 );
+
+CREATE TABLE nutrients (
+    -- 5-digit Nutrient Databank number that uniquely identifies a food item.
+    -- If this field is defined as numeric, the leading zero will be lost.
+    ndb_no varchar(5) REFERENCES foods(ndb_no),
+
+    -- Unique 3-digit identifier code for a nutrient.
+    nutr_no varchar(3) REFERENCES nutrients_desc(nutr_no),
+
+    -- Amount in 100 grams, edible portion
+    nutr_val real not null,
+
+    -- Number of data points is the number of analyses used to calculate the
+    -- nutrient value. If the number of data points is 0,
+    -- the value was calculated or imputed.
+    num_data_points real not null,
+
+    -- Standard error of the mean. Null if cannot be calculated. The standard
+    -- error is also not given if the number of data points is less than three.
+    std_error real,
+
+    -- Standard error of the mean. Null if cannot be calculated.
+    -- The standard error is also not given if the number of data points
+    -- is less than three.
+    src_code varchar(2) not null REFERENCES source_codes(src_code),
+
+    -- Data Derivation Code giving specific information on how the value is determined.
+    -- This field is populated only for items added or updated starting with SR14.
+    -- This field may not be populated if older records were used in the
+    -- calculation of the mean value.
+    deriv_code varchar(4) REFERENCES data_derivation_codes(deriv_code),
+
+    -- NDB number of the item used to calculate a missing value.
+    -- Populated only for items added or updated starting with SR14.
+    ref_ndb_no varchar(5) REFERENCES foods(ndb_no),
+
+    -- Indicates a vitamin or mineral added for fortification or enrichment.
+    -- This field is populated for ready-to- eat breakfast cereals and
+    -- many brand-name hot cereals in food group 08.
+    add_nutr_mark varchar(1),
+
+    -- Number of studies.
+    num_studies smallint,
+
+    -- Minimum value.
+    min real,
+
+    -- Maximum value.
+    max real,
+
+    -- Degrees of freedom.
+    df smallint,
+
+    -- Lower 95% error bound.
+    low_eb real,
+
+    -- Upper 95% error bound.
+    up_eb real,
+
+    -- Statistical comments. See definitions below.
+    stat_comt varchar(10),
+
+    -- Indicates when a value was either added to the database or last modified.
+    addmod_date varchar(10),
+
+    -- Confidence Code indicating data quality, based on evaluation of sample
+    -- plan, sample handling, analytical method, analytical quality control,
+    -- and number of samples analyzed. Not included in this release, but is
+    -- planned for future releases.
+    cc varchar(1),
+
+    PRIMARY KEY(ndb_no, nutr_no)
+);
+
 
 COMMIT;
