@@ -1,4 +1,4 @@
-BEGIN SCHEMA_CREATION;
+BEGIN;
 
 CREATE TABLE foods (
 
@@ -24,7 +24,7 @@ CREATE TABLE foods (
   com_name varchar(100),
 
   -- Indicates the company that manufactured the product, when appropriate.
-  manufac_name varchar(65)
+  manufac_name varchar(65),
 
   -- Indicates if the food item is used in the USDA Food and Nutrient Database
   -- for Dietary Studies (FNDDS) and thus has a complete nutrient profile
@@ -72,7 +72,7 @@ CREATE TABLE langual_factor (
   ndb_no varchar(5) references foods(ndb_no),
 
   -- The LanguaL factor from the Thesaurus.
-  factor_code varchar(5) references langual_desc(factor_code)
+  factor_code varchar(5) references langual_desc(factor_code),
 
   PRIMARY KEY(ndb_no, factor_code)
 );
@@ -298,4 +298,4 @@ CREATE TABLE sources_of_data_link (
     PRIMARY KEY(ndb_no, nutr_no, datasrc_id)
 );
 
-COMMIT SCHEMA_CREATION;
+COMMIT;
