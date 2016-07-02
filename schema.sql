@@ -178,7 +178,7 @@ CREATE TABLE footnotes (
 
 );
 
-CREATE TABLE sources_of_data (
+CREATE TABLE data_sources (
     -- Unique number identifying the reference/source.
     datasrc_id varchar(6) PRIMARY KEY,
 
@@ -211,7 +211,7 @@ CREATE TABLE sources_of_data (
     end_page varchar(5)
 );
 
-CREATE TABLE sources_of_data_link (
+CREATE TABLE data_sources_link (
     -- 5-digit Nutrient Databank number that uniquely identifies a food item.
     -- If this field is defined as numeric, the leading zero will be lost.
     ndb_no varchar(5) REFERENCES foods(ndb_no),
@@ -220,7 +220,7 @@ CREATE TABLE sources_of_data_link (
     nutr_no varchar(3) REFERENCES nutrients_desc(nutr_no),
 
     -- Unique ID identifying the reference/source.
-    datasrc_id varchar(6) REFERENCES sources_of_data(datasrc_id),
+    datasrc_id varchar(6) REFERENCES data_sources(datasrc_id),
 
     PRIMARY KEY(ndb_no, nutr_no, datasrc_id)
 );
